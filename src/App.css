@@ -1,0 +1,32 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  padding: 70px 0px;
+}
+
+#signInDivGoogle {
+  width: 195px;
+  position: fixed;
+  left: 20px;
+  top: 20px;
+}
+#signOut {
+  padding: 5px 10px;
+  position: fixed;
+  left: 20px;
+  top: 20px;
+}
+
+.userInfo h2 {
+  text-decoration: underline;
+}
+
+.userInfo h3 {
+  font-weight: 500;
+}
+
+.userInfo {
+  padding: 20px;
+}
