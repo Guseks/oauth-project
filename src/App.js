@@ -6,6 +6,8 @@ function App() {
 
   const [user, setUser] = useState({});
 
+  var facebookSDKLoaded = false;
+
   function handleCallbackResponse(response){
     //console.log("Encoded JWT ID token: " + response.credential);
     var userObject = jwtDecode(response.credential);
@@ -18,6 +20,30 @@ function App() {
     setUser({});
     document.getElementById("signInDiv").hidden = false;
   }
+
+  function handleFacebookLogin(){
+    if(facebookSDKLoaded){
+      FB.login(function(response){
+        if(response.authResponse){
+          console.log('Welcome! Fetching your information.... ');
+          FB.api('/me', function(response) {
+            console.log('Successful login for: ' + response.name);
+            // Fetch user data and update state
+            setUser(response);
+          });
+        }
+        else {
+          console.log('User cancelled login or did not fully authorize.');
+        }
+      },  { scope: 'public_profile,email' });
+    }
+    else {
+      console.error("Facebook SDK not initialized");
+    }
+    
+  }
+
+
   // Setup Google Login
   useEffect(()=> {
     /* global google */
@@ -33,15 +59,46 @@ function App() {
   }, [])
 
   useEffect(()=> {
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId      : '{app-id}',
-        cookie     : true,
-        xfbml      : true,
-        version    : '{api-version}'
-      });
-      // Additional initialization code here
+    /*
+    const facebookScript = document.getElementById("facebook-script");
+    facebookScript.onload = () => {
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '468487348838237',
+          cookie     : true,
+          xfbml      : true,
+          version    : 'v19.0'
+        });
+        // Additional initialization code here
+      };
+      
+
+    }
+    */
+    const initFacebookSDK = () => {
+      try {
+        FB.init({
+          appId: '824164816401663',
+          cookie: true,
+          xfbml: true,
+          oauth: true,
+          status: true,
+          version: 'v19.0'
+        });
+        facebookSDKLoaded = true;
+      }
+      catch (err) {
+        console.error(err);
+      }
+      
+    
     };
+
+    initFacebookSDK();
+    
+
+
+    
   }, [])
   // If we have no user -> show login button
   // If user logged in, show logout button
@@ -50,6 +107,7 @@ function App() {
     <div className="App">
       <div className='buttons'>
         <div id="signInDivGoogle"></div>
+        <button onClick={() => handleFacebookLogin()}>Login with Facebook</button>
         {
           Object.keys(user).length !== 0 && <button id="signOut" onClick={(e) => handleSignOut(e)}>Logout</button>
         }
