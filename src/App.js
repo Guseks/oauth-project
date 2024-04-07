@@ -2,11 +2,11 @@ import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import './App.css';
 
+
 function App() {
 
   const [user, setUser] = useState({});
 
-  var facebookSDKLoaded = false;
 
   function handleCallbackResponse(response){
     //console.log("Encoded JWT ID token: " + response.credential);
@@ -21,7 +21,26 @@ function App() {
     document.getElementById("signInDiv").hidden = false;
   }
 
-  function handleFacebookLogin(){
+  function handleFacebookLogin(response){
+    console.log(response)
+    /*
+    FB.login(function(response){
+      if(response.authResponse){
+        console.log('Welcome! Fetching your information.... ');
+        FB.api('/me', function(response) {
+          console.log('Successful login for: ' + response.name);
+          // Fetch user data and update state
+          setUser(response);
+        });
+      }
+      else {
+        console.log('User cancelled login or did not fully authorize.');
+      }
+    },  { scope: 'public_profile,email' });
+    */
+  }
+    
+    /*
     if(facebookSDKLoaded){
       FB.login(function(response){
         if(response.authResponse){
@@ -40,10 +59,10 @@ function App() {
     else {
       console.error("Facebook SDK not initialized");
     }
+    */
     
-  }
-
-
+  
+ 
   // Setup Google Login
   useEffect(()=> {
     /* global google */
@@ -59,6 +78,14 @@ function App() {
   }, [])
 
   useEffect(()=> {
+
+    
+
+    FB.getLoginStatus(function(response) {
+      handleFacebookLogin(response);
+    });
+    
+  }, [])
     /*
     const facebookScript = document.getElementById("facebook-script");
     facebookScript.onload = () => {
@@ -75,6 +102,8 @@ function App() {
 
     }
     */
+
+    /*
     const initFacebookSDK = () => {
       try {
         FB.init({
@@ -96,10 +125,9 @@ function App() {
 
     initFacebookSDK();
     
-
-
+*/
     
-  }, [])
+ 
   // If we have no user -> show login button
   // If user logged in, show logout button
 

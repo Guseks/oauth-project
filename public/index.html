@@ -26,7 +26,27 @@
     -->
     <title>React App</title>
     <script src="https://accounts.google.com/gsi/client " async defer></script>
-    <script id="facebook-script" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js" async defer></script>
+    <script>
+      window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '824164816401663',
+        cookie     : true,
+        xfbml      : true,
+        version    : 'v11.0'
+      });
+        
+      FB.AppEvents.logPageView();   
+        
+      };
+  
+      (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
