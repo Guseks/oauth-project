@@ -1,74 +1,59 @@
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import './App.css';
+import facebookLoginImage from './Images/facebookLogin.png';
 
 
+var Facebook;
 function App() {
 
   const [user, setUser] = useState({});
 
-
-  function handleCallbackResponse(response){
-    //console.log("Encoded JWT ID token: " + response.credential);
+  function handleGoogleLogin(response){
     var userObject = jwtDecode(response.credential);
     console.log(userObject);
     setUser(userObject);
-    document.getElementById("signInDiv").hidden = true;
+    document.getElementById("signInDivGoogle").hidden = true;
+    document.getElementById("signInFacebook").hidden = true;
   }
 
   function handleSignOut(event){
     setUser({});
-    document.getElementById("signInDiv").hidden = false;
+    document.getElementById("signInDivGoogle").hidden = false;
+    document.getElementById("signInFacebook").hidden = false;
+    
   }
 
-  function handleFacebookLogin(response){
-    console.log(response)
-    /*
-    FB.login(function(response){
+  function handleFacebookLogin(){
+    console.log(Facebook);
+    Facebook.login(function(response){
       if(response.authResponse){
-        console.log('Welcome! Fetching your information.... ');
-        FB.api('/me', function(response) {
-          console.log('Successful login for: ' + response.name);
-          // Fetch user data and update state
-          setUser(response);
+        console.log("Welcome! Fetching your information!");
+        Facebook.api("/me", { fields: 'id,name,picture' }, function(response){
+          console.log(response);
+          setUser({
+            id: response.id,
+            name: response.name,
+            picture: response.picture.data.url // Access profile picture URL
+          });
         });
+        document.getElementById("signInDivGoogle").hidden = true;
+        document.getElementById("signInFacebook").hidden = true;
       }
       else {
-        console.log('User cancelled login or did not fully authorize.');
+        console.log("Facebook login failed: ", response.status);
       }
-    },  { scope: 'public_profile,email' });
-    */
+      
+    });
+    
   }
-    
-    /*
-    if(facebookSDKLoaded){
-      FB.login(function(response){
-        if(response.authResponse){
-          console.log('Welcome! Fetching your information.... ');
-          FB.api('/me', function(response) {
-            console.log('Successful login for: ' + response.name);
-            // Fetch user data and update state
-            setUser(response);
-          });
-        }
-        else {
-          console.log('User cancelled login or did not fully authorize.');
-        }
-      },  { scope: 'public_profile,email' });
-    }
-    else {
-      console.error("Facebook SDK not initialized");
-    }
-    */
-    
-  
  
   // Setup Google Login
   useEffect(()=> {
     /* global google */
     google.accounts.id.initialize({
       client_id: "188519315872-dat9i412mchatlib7ip3kmulrl8nj9vi.apps.googleusercontent.com",
-      callback: handleCallbackResponse
+      callback: handleGoogleLogin
     })
 
     google.accounts.id.renderButton(
@@ -77,65 +62,38 @@ function App() {
     );
   }, [])
 
-  useEffect(()=> {
-
-    
-
-    FB.getLoginStatus(function(response) {
-      handleFacebookLogin(response);
-    });
-    
-  }, [])
-    /*
-    const facebookScript = document.getElementById("facebook-script");
-    facebookScript.onload = () => {
-      window.fbAsyncInit = function() {
-        FB.init({
-          appId      : '468487348838237',
-          cookie     : true,
-          xfbml      : true,
-          version    : 'v19.0'
-        });
-        // Additional initialization code here
-      };
-      
-
-    }
-    */
-
-    /*
-    const initFacebookSDK = () => {
-      try {
-        FB.init({
-          appId: '824164816401663',
-          cookie: true,
-          xfbml: true,
-          oauth: true,
-          status: true,
-          version: 'v19.0'
-        });
-        facebookSDKLoaded = true;
-      }
-      catch (err) {
-        console.error(err);
-      }
-      
-    
+  useEffect(() => {
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: '824164816401663',
+        cookie: true,
+        xfbml: true,
+        version: 'v19.0'
+      });
+      Facebook = FB;
+      console.log("Facebook SDK loaded successfully!");
     };
+    
 
-    initFacebookSDK();
-    
-*/
-    
- 
-  // If we have no user -> show login button
-  // If user logged in, show logout button
+    // Load the SDK asynchronously
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) { return; }
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+      console.log("Facebook SDK loaded!");
+    }(document, 'script', 'facebook-jssdk'));
+  
+  }, []);
+
 
   return (
     <div className="App">
       <div className='buttons'>
         <div id="signInDivGoogle"></div>
-        <button onClick={() => handleFacebookLogin()}>Login with Facebook</button>
+        <button style={{backgroundImage: `url(${facebookLoginImage})`}} id="signInFacebook" onClick={() => handleFacebookLogin()} />
+          
         {
           Object.keys(user).length !== 0 && <button id="signOut" onClick={(e) => handleSignOut(e)}>Logout</button>
         }
@@ -144,8 +102,9 @@ function App() {
       
       {user && 
         <div className='userInfo'>
+          <h2>User Info</h2>
           <img src={user.picture}/>
-          <h3>{user.name}</h3>
+          <span>{user.name}</span>
         </div>
       }
       
