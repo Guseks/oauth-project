@@ -1,24 +1,19 @@
 import {useState} from 'react'
-import axios from "axios"
-import {LoginSocialFacebook} from "reactjs-social-login";
-import {FacebookLoginButton} from "react-social-login-buttons";
-import { Headline, Name, UserInfo, Container } from './userInfo';
+import {LoginSocialLinkedin} from "reactjs-social-login";
+import {LinkedInLoginButton} from "react-social-login-buttons";
+import { Headline, Name, UserInfo, Container, Image, Logout } from './userInfo';
 
-
-
-const FacebookLogin = () => {
+const LinkedInLogin = () => {
 
   const [user, setUser] = useState(null);
 
-  async function handleFacebookLogin(data){
+  async function handleLinkedInLogin(data){
     try {
-      const response = await axios.get(`https://graph.facebook.com/me?fields=id,name,picture&access_token=${data.accessToken}`);
-      
       setUser({
-        id: response.data.id,
-        name: response.data.name,
-        picture: response.data.picture.data.url // Access profile picture URL
-      });
+        id: data.id,
+        name: data.name,
+        picture: data.picture.data.url
+      });      
     }
     catch (error){
       console.error('Error fetching profile information:', error);
@@ -26,36 +21,33 @@ const FacebookLogin = () => {
     
   }
 
-
   return (
     <Container>
-       <Headline>Facebook</Headline>
+       <Headline>LinkedIn</Headline>
        {user ? (
           <UserInfo>
             <Name>{user.name}</Name>
-            <img style={{width: "70px"}} src={user.picture}/>
-            <button style={{width: "150px"}} onClick={() => setUser(null)}>Logout Facebook</button>
+            <Image  src={user.picture}/>
+            <Logout  onClick={() => setUser(null)}>Logout Facebook</Logout>
           </UserInfo>
        ) : (
-        <LoginSocialFacebook
-          isOnlyGetToken
-          appId='824164816401663'
-         
+        <LoginSocialLinkedin
+          
+          appId={process.env.REACT_APP_LINKEDIN_ID} 
           onResolve={({data}) => {
-            handleFacebookLogin(data);
+            handleLinkedInLogin(data);
           }}
           onReject={(err) => {
             console.log(err)
           }}
+          
         >
-          <FacebookLoginButton/>
-        </LoginSocialFacebook> 
+          <LinkedInLoginButton/>
+        </LoginSocialLinkedin> 
        )}
         
-       
-       
     </Container>
   )
 }
 
-export default FacebookLogin
+export default LinkedInLogin
