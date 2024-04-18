@@ -3,8 +3,8 @@ import './App.css';
 
 import FacebookLogin from './components/FacebookLogin';
 import GoogleLogin from './components/GoogleLogin';
-//import LinkedInLogin from './components/LinkedInLogin';
-import LinkedInLogin2 from './components/LinkedInLogin2';
+import LinkedInLogin from './components/LinkedInLogin';
+
 
 
 
@@ -15,7 +15,7 @@ function App() {
       
       <GoogleLogin/>
       <FacebookLogin/>
-      <LinkedInLogin2/>
+      <LinkedInLogin/>
        
     </div>
   );
