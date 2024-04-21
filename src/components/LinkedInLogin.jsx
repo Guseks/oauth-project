@@ -8,16 +8,17 @@ import { v4 as uuiv4 } from 'uuid';
 
 
 
-const LinkedInLogin2 = () => {
+const LinkedInLogin = () => {
 
   const [user, setUser] = useState(null);
 
   const clientId = process.env.REACT_APP_LINKEDIN_CLIENT_ID; 
-  const redirect_URL = `${window.location.origin}/linkedin`;
-  const scope = "openid profile"
+  const redirect_URL = process.env.REACT_APP_LINKEDIN_REDIRECT;
+  const scope = "openid profile email";
   const state = uuiv4();
   
   const handleLinkedInLogin = async () => {
+    
     console.log("test");
     const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirect_URL)}&state=${state}&scope=${encodeURIComponent(scope)}`;
     const authWindow = window.open(authUrl, '_blank', 'width=500,height=600');
@@ -44,4 +45,4 @@ const LinkedInLogin2 = () => {
   )
 }
 
-export default LinkedInLogin2
+export default LinkedInLogin
