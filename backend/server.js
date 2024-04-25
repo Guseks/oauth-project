@@ -1,9 +1,8 @@
-const express = require("express");
-const axios = require("axios");
-const cors = require("cors");
-const env = require("dotenv");
-const querystring = require("node:querystring");
-env.config();
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import axios from "axios";
+import querystring from "node:querystring";
 
 const app = express();
 const port = process.env.BACKEND_PORT;
@@ -15,9 +14,9 @@ async function getLinkedInAccessToken(auth_code) {
     const reqBody = querystring.stringify({
       grant_type: "authorization_code",
       code: auth_code,
-      client_id: process.env.REACT_APP_LINKEDIN_CLIENT_ID,
-      client_secret: process.env.REACT_APP_LINKEDIN_APP_SECRET,
-      redirect_uri: process.env.REACT_APP_LINKEDIN_REDIRECT,
+      client_id: process.env.LINKEDIN_CLIENT_ID,
+      client_secret: process.env.LINKEDIN_APP_SECRET,
+      redirect_uri: process.env.LINKEDIN_REDIRECT,
     });
     const response = await axios.post(
       "https://www.linkedin.com/oauth/v2/accessToken",
@@ -50,7 +49,13 @@ async function getUserInfo(accessToken) {
   }
 }
 
-app.post("/linkedin/callback", async (req, res) => {
+app.get("/", (req, res) => {
+  console.log("Hello!");
+  res.send("Hello!");
+});
+
+app.get("/linkedin/callback", async (req, res) => {
+  console.log("Im inside /linkedin/callback");
   const auth_code = req.query.code;
 
   try {
@@ -58,7 +63,9 @@ app.post("/linkedin/callback", async (req, res) => {
     console.log(`AccessToken: ${accessToken}`);
     if (accessToken) {
       const userInfo = await getUserInfo(accessToken, res);
-      const redirectUrl = `http://localhost:3000/?user=${encodeURIComponent(JSON.stringify(userInfo))}`;
+      const redirectUrl = `http://localhost:3000/?user=${encodeURIComponent(
+        JSON.stringify(userInfo)
+      )}`;
       //redirectUrl kommer ha en query parameter `user` som kommer vara en encodad user. Decoda detta i frontend.
       res.redirect(redirectUrl);
     }
