@@ -58,8 +58,9 @@ app.post("/linkedin/callback", async (req, res) => {
     console.log(`AccessToken: ${accessToken}`);
     if (accessToken) {
       const userInfo = await getUserInfo(accessToken, res);
-      console.log(userInfo);
-      res.send(userInfo);
+      const redirectUrl = `http://localhost:3000/?user=${encodeURIComponent(JSON.stringify(userInfo))}`;
+      //redirectUrl kommer ha en query parameter `user` som kommer vara en encodad user. Decoda detta i frontend.
+      res.redirect(redirectUrl);
     }
   } catch (error) {
     console.error("Error exchanging auth_code for access token: ", error);
